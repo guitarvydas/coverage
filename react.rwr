@@ -1,7 +1,11 @@
 react {
   chars [charOrPhrase+] = ‛«charOrPhrase»’
   //charOrPhrase = ...
-  functionDefinition[async? spaces _function spc spaces2 name spaces3 parameterList spaces4 lb insideFunction* rb]=‛«async»«spaces»«_function»«spc»«spaces2»«name»«spaces3»«parameterList»«spaces4»«lb»«insideFunction»«rb»’
+  functionDefinition[async? spaces f spc spaces2 name spaces3 parameterList spaces4 lb insideFunction* rb] ‛«_.push_scope_and_reset_index (name.rwr ())»’ = ‛
+〖declare ❲«name»❳ index=0 kind=function〗
+«async»«spaces»«f»«spc»«spaces2»«name»«spaces3»«parameterList»«spaces4»«lb»
+〖visit ❲«name»❳ index=0〗
+«insideFunction»«rb»«_.pop_scope ()»’
 
   insideFunction_nested [lb insideFunction* rb] = ‛«lb»«insideFunction»«rb»’
   insideFunction_ifstatement [ifStatement] = ‛«ifStatement»’
@@ -9,8 +13,14 @@ react {
 
   ifStatement [_if condition thenScope elseScope?] = ‛«_if»«condition»«thenScope»«elseScope»’
   condition [ws e+] = ‛«ws»«e»’
-  thenScope [lb s* rb] = ‛«lb»«s»«rb»’
-  elseScope [ws _else ws2 lb s* rb] = ‛«ws»«_else»«ws2»«lb»«s»«rb»’
+  thenScope [lb s* rb] ‛«_.gen_index ()»’ = ‛«lb»
+〖declare ❲«_.get_scope_name ()»❳ index=«_.get_index ()» kind=if〗
+〖visit ❲«_.get_scope_name ()»❳ index=«_.get_index ()»〗
+«s»«rb»«_.pop_scope ()»’
+  elseScope [ws _else ws2 lb s* rb] ‛«_.gen_index ()»’ = ‛«ws»«_else»«ws2»«lb»
+〖declare ❲«_.get_scope_name ()»❳ index=«_.get_index ()» kind=else〗
+〖visit ❲«_.get_scope_name ()»❳ index=«_.get_index ()»〗
+«s»«rb»«_.pop_scope ()»’
 
   //insideScope = ...
 
