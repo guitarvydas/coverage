@@ -1,0 +1,43 @@
+react {
+  chars = charOrPhrase+
+  charOrPhrase =
+    | string
+    | comment
+    | functionDefinition
+    | any
+
+  functionDefinition = "async"? spaces "function" " " spaces name spaces parameterList spaces "{" insideFunction* "}"
+    
+  insideFunction =
+    | "{" insideFunction* "}" -- nested
+    | ifStatement -- ifstatement
+    | ~"}" charOrPhrase -- bottom
+
+  ifStatement = "if" " " spaces (~"{" any)+ "{" insideScope* "}"
+  insideScope = insideFunction
+
+  comment =
+    | multiLineComment
+    | singleLineComment
+
+  singleLineComment = "//" (~nl any)* nl
+  multiLineComment = "/*" commentChar* "*/"
+  commentChar = ~"*/" any
+
+  name = spaces (letter | "_") (letter | digit | "_")* spaces
+  parameterList = "(" listOf<parameter, ",">? ")"
+  parameter =
+    | spaces "{" listOf<parameter, ","> "}" -- destructuring
+    | spaces "..." name -- vararg
+    | name -- simple
+  string =
+    | "\"" dstrChar* "\""
+    | "'" sstrChar* "'"
+  dstrChar =
+    | "\\" any -- escaped
+    | ~"\"" any -- raw
+  sstrChar =
+    | "\\" any -- escaped
+    | ~"'" any -- raw
+  nl = "\n"
+}

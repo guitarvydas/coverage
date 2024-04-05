@@ -1,0 +1,26 @@
+react {
+  chars [charOrPhrase+] = ‛«charOrPhrase»’
+  functionDefinition[async? spaces f spc spaces2 name spaces3 parameterList spaces4 lb insideFunction rb]=‛
+_coverage ["«name»"] = False;
+«async»«spaces»«f»«spc»«spaces2»«name»«spaces3»«parameterList»«spaces4»«lb»
+_coverage ["«name»"] = true;
+«insideFunction»«rb»’
+
+  insideFunctionnested [lb insideFunction* rb] = ‛«lb»«insideFunction»«rb»’
+  insideFunction_ifstatement [ifStatement] = ‛«ifStatement»’
+  insideFunctionbottom [charOrPhrase] = ‛«charOrPhrase»’
+
+  ifStatement [_if spc spaces e+ lb insideScope* rb] = ‛«_if»«spc»«spaces»«e»«lb»«insideScope»«rb»’
+  singleLineComment [slsl c* nl] = ‛«slsl»«c»«nl»’
+  multiLineComment [slst commentChar* stsl] = ‛«slst»«commentChar»«stsl»’
+
+  name [spaces firstC moreC* spaces2] = ‛«spaces»«firstC»«moreC»«spaces2»’
+  parameterList [lb listofparam? rb] = ‛«lb»«listofparam»«rb»’
+  parameter_destructuring [spaces lb listofparam rb] = ‛«spaces»«lb»«listofparam»«rb»’
+  parameter_vararg [spaces dotdotdot name] = ‛«spaces»«dotdotdot»«name»’
+  parameter_name [name] = ‛«name»’
+  dstrChar_escaped [esc any] = ‛«esc»«any»’
+  dstr_raw [c] = ‛«c»’
+  sstrChar_escaped [esc any] = ‛«esc»«any»’
+  sstr_raw [c] = ‛«c»’
+}
