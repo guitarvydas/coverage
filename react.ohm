@@ -13,7 +13,10 @@ react {
     | ifStatement -- ifstatement
     | ~"}" charOrPhrase -- bottom
 
-  ifStatement = "if" " " spaces (~"{" any)+ "{" insideScope* "}"
+  ifStatement = "if" condition thenScope elseScope?
+  condition = ws (~"{" any)+
+  thenScope = "{" insideScope* "}"
+  elseScope = ws "else" ws "{" insideScope* "}"
   insideScope = insideFunction
 
   comment =
@@ -24,15 +27,18 @@ react {
   multiLineComment = "/*" commentChar* "*/"
   commentChar = ~"*/" any
 
+  ws = (" " | "\n") spaces
   name = spaces (letter | "_") (letter | digit | "_")* spaces
-  parameterList = "(" listOf<parameter, ",">? ")"
+  parameterList = "(" parameters? spaces ")"
+  parameters = spaces parameter moreParameter*
+  moreParameter = "," spaces parameter spaces
   parameter =
-    | spaces "{" listOf<parameter, ","> "}" -- destructuring
+    | spaces "{" parameters "}" -- destructuring
     | spaces "..." name -- vararg
     | name -- simple
   string =
-    | "\"" dstrChar* "\""
-    | "'" sstrChar* "'"
+    | "\"" dstrChar* "\"" -- dstr
+    | "'" sstrChar* "'" -- sstr
   dstrChar =
     | "\\" any -- escaped
     | ~"\"" any -- raw
@@ -41,3 +47,4 @@ react {
     | ~"'" any -- raw
   nl = "\n"
 }
+

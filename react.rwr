@@ -1,26 +1,38 @@
 react {
   chars [charOrPhrase+] = ‛«charOrPhrase»’
-  functionDefinition[async? spaces f spc spaces2 name spaces3 parameterList spaces4 lb insideFunction rb]=‛
-_coverage ["«name»"] = False;
-«async»«spaces»«f»«spc»«spaces2»«name»«spaces3»«parameterList»«spaces4»«lb»
-_coverage ["«name»"] = true;
-«insideFunction»«rb»’
+  //charOrPhrase = ...
+  functionDefinition[async? spaces _function spc spaces2 name spaces3 parameterList spaces4 lb insideFunction* rb]=‛«async»«spaces»«_function»«spc»«spaces2»«name»«spaces3»«parameterList»«spaces4»«lb»«insideFunction»«rb»’
 
-  insideFunctionnested [lb insideFunction* rb] = ‛«lb»«insideFunction»«rb»’
+  insideFunction_nested [lb insideFunction* rb] = ‛«lb»«insideFunction»«rb»’
   insideFunction_ifstatement [ifStatement] = ‛«ifStatement»’
-  insideFunctionbottom [charOrPhrase] = ‛«charOrPhrase»’
+  insideFunction_bottom [charOrPhrase] = ‛«charOrPhrase»’
 
-  ifStatement [_if spc spaces e+ lb insideScope* rb] = ‛«_if»«spc»«spaces»«e»«lb»«insideScope»«rb»’
+  ifStatement [_if condition thenScope elseScope?] = ‛«_if»«condition»«thenScope»«elseScope»’
+  condition [ws e+] = ‛«ws»«e»’
+  thenScope [lb s* rb] = ‛«lb»«s»«rb»’
+  elseScope [ws _else ws2 lb s* rb] = ‛«ws»«_else»«ws2»«lb»«s»«rb»’
+
+  //insideScope = ...
+
+  //comment = ...
+
   singleLineComment [slsl c* nl] = ‛«slsl»«c»«nl»’
   multiLineComment [slst commentChar* stsl] = ‛«slst»«commentChar»«stsl»’
+  //commentChar = ...
 
+  ws [c spaces] = ‛«c»«spaces»’
   name [spaces firstC moreC* spaces2] = ‛«spaces»«firstC»«moreC»«spaces2»’
-  parameterList [lb listofparam? rb] = ‛«lb»«listofparam»«rb»’
+  parameterList [lb parameters? spaces rb] = ‛«lb»«parameters»«spaces»«rb»’
+  parameters [spaces parameter moreParameter*] = ‛«spaces»«parameter»«moreParameter»’
+  moreParameter [comma spaces parameter spaces2] = ‛«comma»«spaces»«parameter»«spaces2»’
   parameter_destructuring [spaces lb listofparam rb] = ‛«spaces»«lb»«listofparam»«rb»’
   parameter_vararg [spaces dotdotdot name] = ‛«spaces»«dotdotdot»«name»’
-  parameter_name [name] = ‛«name»’
+  parameter_simple [name] = ‛«name»’
+  string_dstr [dq dstrChar* dq2] = ‛«dq»«dstrChar»«dq2»’
+  string_sstr [sq sstrChar* sq2] = ‛«sq»«sstrChar»«sq2»’
   dstrChar_escaped [esc any] = ‛«esc»«any»’
-  dstr_raw [c] = ‛«c»’
+  dstrChar_raw [c] = ‛«c»’
   sstrChar_escaped [esc any] = ‛«esc»«any»’
-  sstr_raw [c] = ‛«c»’
+  sstrChar_raw [c] = ‛«c»’
+  //nl = ...
 }
